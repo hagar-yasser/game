@@ -234,28 +234,31 @@ public class Simulator {
 	    if(sim instanceof Unit )
             ((Unit)sim).setLocation(world[x][y]);
     }
-    public void nextCycle(){
+    public void nextCycle() {
 		currentCycle++;
-		if(!plannedDisasters.isEmpty()&&plannedDisasters.get(0).getStartCycle()==currentCycle){
-			Disaster disaster=plannedDisasters.get(0);
-			if(disaster instanceof Fire){
-				ResidentialBuilding r=(ResidentialBuilding)disaster.getTarget();
-				if(r.getGasLevel()==0)
-					((Fire)disaster).strike();
-				if(r.getGasLevel()>0&&r.getGasLevel()<70){
-					 disaster=new Collapse(disaster.getStartCycle(),r);
+		for (int j = 0; j < plannedDisasters.size(); j++) {
+
+
+		if ( plannedDisasters.get(j).getStartCycle() == currentCycle) {
+			Disaster disaster = plannedDisasters.get(j);
+			if (disaster instanceof Fire) {
+				ResidentialBuilding r = (ResidentialBuilding) disaster.getTarget();
+				if (r.getGasLevel() == 0)
+					((Fire) disaster).strike();
+				if (r.getGasLevel() > 0 && r.getGasLevel() < 70) {
+					disaster = new Collapse(disaster.getStartCycle(), r);
 					r.setFireDamage(0);
 					disaster.strike();
 				}
-				if(r.getGasLevel()<=70){
+				if (r.getGasLevel() <= 70) {
 					r.setStructuralIntegrity(0);
 				}
 
 			}
-			if(disaster instanceof GasLeak){
-				ResidentialBuilding r=(ResidentialBuilding)disaster.getTarget();
-				if(r.getDisaster()!=null&&r.getDisaster() instanceof Fire){
-					disaster=new Collapse(disaster.getStartCycle(),r);
+			if (disaster instanceof GasLeak) {
+				ResidentialBuilding r = (ResidentialBuilding) disaster.getTarget();
+				if (r.getDisaster() != null && r.getDisaster() instanceof Fire) {
+					disaster = new Collapse(disaster.getStartCycle(), r);
 					r.setFireDamage(0);
 					disaster.strike();
 				}
@@ -263,11 +266,11 @@ public class Simulator {
 			}
 			plannedDisasters.remove(disaster);
 
-			for (int i = 0; i <executedDisasters.size() ; i++) {
-				if(executedDisasters.get(i).getTarget() instanceof ResidentialBuilding){
-					ResidentialBuilding r=(ResidentialBuilding)executedDisasters.get(i).getTarget();
-					if(r.getFireDamage()==100){
-						Collapse c=new Collapse(currentCycle,r);
+			for (int i = 0; i < executedDisasters.size(); i++) {
+				if (executedDisasters.get(i).getTarget() instanceof ResidentialBuilding) {
+					ResidentialBuilding r = (ResidentialBuilding) executedDisasters.get(i).getTarget();
+					if (r.getFireDamage() == 100) {
+						Collapse c = new Collapse(currentCycle, r);
 						c.strike();
 					}
 				}
@@ -278,6 +281,7 @@ public class Simulator {
 
 
 		}
+	}
 		for (int i = 0; i <emergencyUnits.size() ; i++) {
 			emergencyUnits.get(i).cycleStep();
 		}
